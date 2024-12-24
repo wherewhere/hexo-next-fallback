@@ -20,7 +20,7 @@ hexo.extend.generator.register(
   () => {
     return {
       path: "js/third-party/next-fallback/fallback.js",
-      data: `${hexo.config.theme_config.motion?.enable ?? true ? `(${fallback.motion})();\n` : ''}${hexo.config.theme_config.lazyload ?? false ? `(${fallback.lazyload})();\n` : ''}(${fallback.flex})();\n(${fallback.navbar})();\n(${fallback.scroll})();\n(${fallback.css.toString().replace("${css-vars-ponyfill}", getVendor(hexo.config.theme_config.vendors?.plugins || "cdnjs"))})();`
+      data: `${hexo.config.theme_config.motion?.enable ?? true ? `(${fallback.motion})();\n` : ''}${hexo.config.theme_config.lazyload ?? false ? `(${fallback.lazyload})();\n` : ''}(${fallback.flex})();\n(${fallback.navbar})();\n(${fallback.scroll})();\n(${fallback.highlight})();\n(${fallback.css.toString().replace("${css-vars-ponyfill}", getVendor(hexo.config.theme_config.vendors?.plugins || "cdnjs"))})();`
     };
   });
 
