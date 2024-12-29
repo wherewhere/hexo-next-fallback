@@ -2,5 +2,8 @@
   "name": "hexo-next-fallback",
   "version": "0.0.1",
   "main": "index.js",
-  "dependencies": {}
+  "dependencies": {
+    "@babel/core": "^7.26.0",
+    "@babel/preset-env": "^7.0.0"
+  }
 }
