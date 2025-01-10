@@ -32,17 +32,23 @@ function createFallbackAsync(hexo) {
   /** @type {string[]} */
   const script = [];
   const theme = hexo.config.theme_config;
+  script.push(`(${fallback.init})();`);
   if (theme.motion?.enable ?? true) {
     script.push(`(${fallback.motion})();`);
   }
   if (theme.lazyload ?? false) {
     script.push(`(${fallback.lazyload})();`);
   }
+  if (theme.pjax ?? false) {
+    script.push(`(${fallback.pjax})();`);
+  }
   script.push(`(${fallback.flex})();`);
   script.push(`(${fallback.navbar})();`);
   script.push(`(${fallback.scroll})();`);
+  script.push(`(${fallback.sidebar})();`);
   script.push(`(${fallback.highlight})();`);
   script.push(`(${fallback.css.toString().replace("${css-vars-ponyfill}", getVendor(theme.vendors?.plugins || "cdnjs"))})();`);
+  script.push(`(${fallback.refresh})();`);
   return babelAsync(script.join('\n'));
 }
 
