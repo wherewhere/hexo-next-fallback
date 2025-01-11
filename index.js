@@ -44,6 +44,7 @@ function createFallbackAsync(hexo) {
   }
   script.push(`(${fallback.flex})();`);
   script.push(`(${fallback.navbar})();`);
+  script.push(`(${fallback.search})();`);
   script.push(`(${fallback.scroll})();`);
   script.push(`(${fallback.sidebar})();`);
   script.push(`(${fallback.highlight})();`);
