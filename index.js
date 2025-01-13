@@ -21,7 +21,7 @@ function getVendor(type) {
  * @param {string} text
  */
 async function babelAsync(text) {
-  const result = await transformAsync(text, { presets: [["@babel/preset-env"]], targets: { ie: "5" } });
+  const result = await transformAsync(text, { presets: [["@babel/preset-env"]], sourceType: "script", targets: { ie: "5" } });
   return result.code;
 }
 
