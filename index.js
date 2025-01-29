@@ -5,7 +5,7 @@ const fallback = require("./lib/fallback.js");
 /**
  * @param {"jsdelivr" | "unpkg" | "cdnjs"} type 
  */
-function getVendor(type) {
+function getCSSVars(type) {
   switch (type) {
     case "jsdelivr":
       return "https://cdn.jsdelivr.net/npm/css-vars-ponyfill";
@@ -14,6 +14,21 @@ function getVendor(type) {
     case "cdnjs":
     default:
       return "https://cdnjs.cloudflare.com/ajax/libs/css-vars-ponyfill/2.4.9/css-vars-ponyfill.min.js";
+  }
+}
+
+/**
+ * @param {"jsdelivr" | "unpkg" | "cdnjs"} type 
+ */
+function getFontAwesome(type) {
+  switch (type) {
+    case "jsdelivr":
+      return "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/all.min.css";
+    case "unpkg":
+      return "https://unpkg.com/@fortawesome/fontawesome-free@6.6.0/css/all.min.css";
+    case "cdnjs":
+    default:
+      return "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css";
   }
 }
 
@@ -48,7 +63,7 @@ function createFallbackAsync(hexo) {
   script.push(`(${fallback.scroll})();`);
   script.push(`(${fallback.sidebar})();`);
   script.push(`(${fallback.highlight})();`);
-  script.push(`(${fallback.css.toString().replace("${css-vars-ponyfill}", getVendor(theme.vendors?.plugins || "cdnjs"))})();`);
+  script.push(`(${fallback.css.toString().replace("${css-vars-ponyfill}", getCSSVars(theme.vendors?.plugins || "cdnjs")).replace("${font-awesome}", getFontAwesome(theme.vendors?.plugins || "cdnjs"))})();`);
   script.push(`(${fallback.refresh})();`);
   return babelAsync(script.join('\n'));
 }
