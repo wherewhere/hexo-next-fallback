@@ -4,6 +4,11 @@
   "main": "index.js",
   "dependencies": {
     "@babel/core": "^7.26.0",
-    "@babel/preset-env": "^7.0.0"
+    "@babel/preset-env": "^7.0.0",
+    "github-markdown-css": "^5.0.0"
+  },
+  "devDependencies": {
+    "@adobe/css-tools": "^4.0.0",
+    "highlight.js": "^11.0.0"
   }
 }

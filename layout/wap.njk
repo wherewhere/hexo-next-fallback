@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="{{ page.lang }}">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
+  {% if theme.darkmode %}
+  <meta name="theme-color" content="#fff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000" media="(prefers-color-scheme: dark)">
+  {% else %}
+  <meta name="theme-color" content="#fff">
+  {% endif %}
+
+  {% if theme.favicon.apple_touch_icon %}
+  <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for(theme.favicon.apple_touch_icon) }}">
+  {% endif %}
+  {% if theme.favicon.medium %}
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for(theme.favicon.medium) }}">
+  {% endif %}
+  {% if theme.favicon.small %}
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for(theme.favicon.small) }}">
+  {% endif %}
+  {% if theme.favicon.safari_pinned_tab %}
+  <link rel="mask-icon" href="{{ url_for(theme.favicon.safari_pinned_tab) }}" color="{{ theme.theme_color.light }}">
+  {% endif %}
+  {% if theme.favicon.android_manifest %}
+  <link rel="manifest" href="{{ url_for(theme.favicon.android_manifest) }}">
+  {% endif %}
+
+  {% if theme.google_site_verification %}
+  <meta name="google-site-verification" content="{{ theme.google_site_verification }}">
+  {% endif %}
+  {% if theme.bing_site_verification %}
+  <meta name="msvalidate.01" content="{{ theme.bing_site_verification }}">
+  {% endif %}
+  {% if theme.yandex_site_verification %}
+  <meta name="yandex-verification" content="{{ theme.yandex_site_verification }}">
+  {% endif %}
+  {% if theme.baidu_site_verification %}
+  <meta name="baidu-site-verification" content="{{ theme.baidu_site_verification }}">
+  {% endif %}
+
+  {% if theme.pace.enable %}
+  {{ next_vendors('pace_css') }}
+  {{ next_vendors('pace_js') }}
+  {% endif %}
+
+  {% if theme.lazyload %}
+  {{ next_vendors('lazyload') }}
+  {% endif %}
+
+  {% if theme.pjax %}
+  {{ next_vendors('pjax') }}
+  {% endif %}
+
+  {{ next_data('main', next_config()) }}
+  {{ next_js('config.js') }}
+
+  {% if config.meta_generator %}
+  {{ meta_generator() }}
+  {% endif %}
+
+  {% include '_partials/head/head-unique.njk' %}
+
+  {% if page.title %}
+  <title>{{ page.title }} | {{ config.title }}</title>
+  {% else %}
+  <title>{{ config.title }} - {{ config.subtitle }}</title>
+  {% endif %}
+
+  {{ partial('_third-party/analytics/index.njk', {}, { cache: theme.cache.enable }) }}
+
+  {{ theme.highlight.fallback }}
+
+  {{ theme.markdown }}
+
+  <style>
+    :root {
+      color-scheme: light;
+    }
+
+    body {
+      margin: 16px;
+      background: #F3F3F3;
+    }
+
+    iframe,
+    img,
+    video,
+    embed {
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      max-width: 100%;
+      max-height: 75vh;
+    }
+
+    img.emoji {
+      margin-top: 2px;
+    }
+
+    .post-block:last-of-type .post-eof {
+      display: none;
+    }
+
+    .markdown-body {
+      background: none;
+    }
+
+    .markdown-body figure.highlight {
+      margin: 0 auto 20px;
+      position: relative;
+      color: #1f2328;
+      background-color: #f6f8fa;
+      border-radius: 6px;
+    }
+
+    .markdown-body figure.highlight pre {
+      border: 0;
+      margin: 0;
+      padding: 10px 0;
+    }
+
+    .markdown-body figure.highlight table {
+      border: 0;
+      margin: 0;
+      width: auto;
+      border-radius: 6px;
+    }
+
+    .markdown-body figure.highlight tr {
+      border-top: none;
+    }
+
+    .markdown-body figure.highlight tr td {
+      border: 0;
+      padding: 0;
+    }
+
+    .markdown-body figure.highlight .gutter {
+      -moz-user-select: none;
+      -ms-user-select: none;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .markdown-body figure.highlight .gutter pre {
+      padding-left: 10px;
+      padding-right: 10px;
+      text-align: right;
+    }
+
+    .markdown-body figure.highlight .code pre {
+      padding-left: 10px;
+      width: 100%;
+    }
+
+    .markdown-body figure.highlight .marked {
+      background: rgba(0, 0, 0, .3);
+    }
+
+    .post-content .post-title-link {
+      color: inherit;
+    }
+
+    .post-content .post-button {
+      text-align: center;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        color-scheme: dark;
+      }
+
+      body {
+        background: #202020;
+      }
+
+      .markdown-body figure.highlight {
+        color: #f0f6fc;
+        background-color: #151b23;
+      }
+    }
+  </style>
+</head>
+
+<body class="main-inner" itemscope itemtype="http://schema.org/WebPage">
+  {% if page.posts %}
+  {% for post in page.posts.sort('-date').toArray() %}
+  <div class="post-block markdown-body">
+    <div class="post-content" itemscope itemtype="http://schema.org/Article" lang="{{ page.lang }}">
+      <h2>{{ next_url('wap/' + post.path, post.title or __('post.untitled'), { class: 'post-title-link', itemprop:
+        'url' }) }}</h2>
+      {% if post.description and theme.excerpt_description %}
+      <p>{{ post.description }}</p>
+      <!--noindex-->
+      {% if theme.read_more_btn %}
+      <div class="post-button">
+        <a class="btn" href="{{ url_for('wap/' + post.path) }}">
+          {{ __('post.read_more') }} &raquo;
+        </a>
+      </div>
+      {% endif %}
+      <!--/noindex-->
+      {% elif post.excerpt %}
+      {{ post.excerpt }}
+      <!--noindex-->
+      {% if theme.read_more_btn %}
+      <div class="post-button">
+        <a class="btn" href="{{ url_for('wap/' + post.path) }}#more" rel="contents">
+          {{ __('post.read_more') }} &raquo;
+        </a>
+      </div>
+      {% endif %}
+      <!--/noindex-->
+      {% else %}
+      {{ post.content }}
+      {% endif %}
+    </div>
+    <hr class="post-eof">
+  </div>
+  {% endfor %}
+  {% else %}
+  <div class="post-block markdown-body">
+    <div class="post-content" itemscope itemtype="http://schema.org/Article" lang="{{ page.lang }}">
+      <h1>{{ page.title }}</h1>
+      {{ page.content }}
+    </div>
+  </div>
+  {% endif %}
+
+  {% if theme.pjax %}
+  <script>
+    (function () {
+      if (window.Pjax && "replaceState" in history) {
+        var pjax = new Pjax({
+          selectors: [
+            "head title",
+            'meta[property="og:title"]',
+            'script[type="application/json"]',
+            ".main-inner",
+            ".pjax"
+          ],
+          analytics: false,
+          cacheBust: false
+        });
+        Pjax.prototype.executeScripts =
+          function (elements) {
+            for (var i = 0; i < elements.length; i++) {
+              var element = elements[i];
+              var code = element.text || element.textContent || element.innerHTML || '';
+              var script = document.createElement("script");
+              if (element.id) {
+                script.id = element.id;
+              }
+              if (element.className) {
+                script.className = element.className;
+              }
+              if (element.type) {
+                script.type = element.type;
+              }
+              if (element.src) {
+                script.src = element.src;
+                // Force synchronous loading of peripheral JS.
+                script.async = false;
+              }
+              if (element.hasAttribute("data-pjax")) {
+                script.setAttribute("data-pjax", '');
+              }
+              if (code !== '') {
+                script.appendChild(document.createTextNode(code));
+              }
+              element.parentNode.replaceChild(script, element);
+            }
+          };
+        document.addEventListener("pjax:success", function () {
+          pjax.executeScripts(document.querySelectorAll("script[data-pjax]"));
+        });
+        window.pjax = pjax;
+      }
+    })();
+  </script>
+  {% endif %}
+
+  {% if theme.lazyload %}
+  <script>
+    (function () {
+      function lazyload() {
+        try {
+          lozad(".post-content img").observe();
+        }
+        catch (_) {
+          if (document.querySelectorAll) {
+            var elements = document.querySelectorAll("[data-src]");
+            for (var i = 0; i < elements.length; i++) {
+              var element = elements[i];
+              element.setAttribute("src", element.getAttribute("data-src"));
+            }
+          }
+          else {
+            function findDescendants(element, predicate) {
+              var results = [];
+              if (!element) {
+                return results;
+              }
+              var children = element.children;
+              if (!children) {
+                return results;
+              }
+              for (var i = 0; i < children.length; i++) {
+                var child = children[i];
+                if (predicate(child)) {
+                  results.push(child);
+                }
+                var descendant = findDescendants(child, predicate);
+                if (descendant) {
+                  for (var j = 0; j < descendant.length; j++) {
+                    results.push(descendant[j]);
+                  }
+                }
+              }
+              return results;
+            }
+            var elements = findDescendants(document.documentElement, function (element) {
+              return element.attributes && element.attributes.getNamedItem("data-src");
+            });
+            for (var i = 0; i < elements.length; i++) {
+              var element = elements[i];
+              var data = element.attributes.getNamedItem("data-src");
+              var src = document.createAttribute("src");
+              src.value = data.value;
+              element.attributes.setNamedItem(src);
+            }
+          }
+        }
+      }
+      lazyload();
+      if (window.addEventListener) {
+        document.addEventListener("pjax:success", lazyload);
+      }
+    })();
+  </script>
+  {% endif %}
+
+  {% if theme.pace.enable %}
+  <script>
+    if (window.Pace) {
+      Pace.options.restartOnPushState = false;
+      if (document.addEventListener) {
+        document.addEventListener("pjax:send", function () {
+          Pace.restart();
+        });
+      }
+    }
+  </script>
+  {% endif %}
+</body>

@@ -1,4 +1,6 @@
 const { transformAsync } = require("@babel/core");
+const { readFile } = require("fs");
+const { dirname, resolve } = require("path");
 const polyfill = require("./lib/polyfill.js")
 const fallback = require("./lib/fallback.js");
 
@@ -23,12 +25,21 @@ function getCSSVars(type) {
 function getFontAwesome(type) {
   switch (type) {
     case "jsdelivr":
-      return "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/all.min.css";
+      return {
+        regx: "https:\\/\\/cdn\\.jsdelivr\\.net\\/npm\\/font-awesome@\\S+\\/css\\/all\\.min\\.css",
+        src: "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/all.min.css"
+      };
     case "unpkg":
-      return "https://unpkg.com/@fortawesome/fontawesome-free@6.6.0/css/all.min.css";
+      return {
+        regx: "https:\\/\\/unpkg\\.com\\/font-awesome@\\S+\\/css\\/all\\.min\\.css",
+        src: "https://unpkg.com/@fortawesome/fontawesome-free@6.6.0/css/all.min.css"
+      };
     case "cdnjs":
     default:
-      return "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css";
+      return {
+        regx: "https:\\/\\/cdnjs\\.cloudflare\\.com\\/ajax\\/libs\\/font-awesome\\/\\S+\\/css\\/all\\.min\\.css",
+        src: "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+      };
   }
 }
 
@@ -63,7 +74,8 @@ function createFallbackAsync(hexo) {
   script.push(`(${fallback.scroll})();`);
   script.push(`(${fallback.sidebar})();`);
   script.push(`(${fallback.highlight})();`);
-  script.push(`(${fallback.css.toString().replace("${css-vars-ponyfill}", getCSSVars(theme.vendors?.plugins || "cdnjs")).replace("${font-awesome}", getFontAwesome(theme.vendors?.plugins || "cdnjs"))})();`);
+  const awesome = getFontAwesome(theme.vendors?.plugins || "cdnjs");
+  script.push(`(${fallback.css.toString().replace("${css-vars-ponyfill}", getCSSVars(theme.vendors?.plugins || "cdnjs")).replace("${font-awesome-regx}", awesome.regx).replace("${font-awesome}", awesome.src)})();`);
   script.push(`(${fallback.refresh})();`);
   return babelAsync(script.join('\n'));
 }
@@ -101,6 +113,36 @@ hexo.extend.generator.register(
     "js/third-party/next-fallback/fallback.js",
     () => createFallbackAsync(hexo)));
 
-hexo.extend.injector.register(
-  "body_end",
-  '<script src="/js/third-party/next-fallback/fallback.js" defer></script>');
+hexo.extend.filter.register("theme_inject", injects =>
+  injects.bodyEnd.raw("fallback-js", '<script src="/js/third-party/next-fallback/fallback.js" defer></script>', {}, { cache: true }));
+
+hexo.extend.generator.register("wap", async locals => {
+  const path = resolve(dirname(require.resolve("./package.json")), "layout/wap.njk");
+  const layout = await new Promise((/** @type {(string) => void} */ resolve, reject) =>
+    readFile(path, { encoding: "utf8" }, (err, data) => {
+      if (err) {
+        reject(err);
+      }
+      else {
+        resolve(data);
+      }
+    }));
+  if (hexo.config.syntax_highlighter === 'highlight.js' || hexo.config.highlight.enable) {
+    require("./lib/highlight.js")(hexo);
+  }
+  require("./lib/markdown.js")(hexo);
+  hexo.theme.setView("wap.njk", layout);
+  return [
+    {
+      path: "wap/index.html",
+      data: locals,
+      layout: "wap"
+    },
+    ...locals.posts.map(post => {
+      return {
+        path: `wap/${post.path}`,
+        data: post,
+        layout: "wap"
+      };
+    })];
+});
