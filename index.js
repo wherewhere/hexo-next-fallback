@@ -116,6 +116,10 @@ hexo.extend.generator.register(
 hexo.extend.filter.register("theme_inject", injects =>
   injects.bodyEnd.raw("fallback-js", '<script src="/js/third-party/next-fallback/fallback.js" defer></script>', {}, { cache: true }));
 
+if (!hexo.config.bilibili_card?.enable) {
+  hexo.extend.filter.register("after_post_render", require("./lib/bilibili-card.js"));
+}
+
 hexo.extend.generator.register("wap", async locals => {
   const path = resolve(dirname(require.resolve("./package.json")), "layout/wap.njk");
   const layout = await new Promise((/** @type {(string) => void} */ resolve, reject) =>
