@@ -26,12 +26,12 @@ function getFontAwesome(type) {
   switch (type) {
     case "jsdelivr":
       return {
-        regx: "https:\\/\\/cdn\\.jsdelivr\\.net\\/npm\\/font-awesome@\\S+\\/css\\/all\\.min\\.css",
+        regx: "https:\\/\\/cdn\\.jsdelivr\\.net\\/npm\\/@fortawesome\\/fontawesome-free@\\S+\\/css\\/all\\.min\\.css",
         src: "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.6.0/css/all.min.css"
       };
     case "unpkg":
       return {
-        regx: "https:\\/\\/unpkg\\.com\\/font-awesome@\\S+\\/css\\/all\\.min\\.css",
+        regx: "https:\\/\\/unpkg\\.com\\/@fortawesome\\/fontawesome-free@\\S+\\/css\\/all\\.min\\.css",
         src: "https://unpkg.com/@fortawesome/fontawesome-free@6.6.0/css/all.min.css"
       };
     case "cdnjs":
@@ -94,6 +94,8 @@ function renderGenerator(hexo, path, getTextAsync, engine = "js") {
     }
   };
 }
+
+hexo.extend.filter.register("after_render:css", require("./lib/postcss.js"));
 
 hexo.extend.generator.register(
   "hexo-next-polyfill",
