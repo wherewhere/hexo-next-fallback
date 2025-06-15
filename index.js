@@ -106,6 +106,10 @@ hexo.extend.generator.register(
 
 hexo.extend.injector.register(
   "head_begin",
+  '<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">');
+
+hexo.extend.injector.register(
+  "head_begin",
   '<script src="/js/third-party/next-fallback/polyfill.js"></script>');
 
 hexo.extend.generator.register(
