@@ -80,8 +80,27 @@
     }
 
     body {
-      margin: 16px;
+      padding: 16px;
       background: #F3F3F3;
+      transition: all 0.083s ease-in-out;
+    }
+
+    @media (min-width: 640px) {
+      body {
+        padding: 16px 32px 16px;
+      }
+    }
+
+    @media (min-width: 1007px) {
+      body {
+        padding: 16px 64px 16px;
+      }
+    }
+
+    @media (min-width: 1372px) {
+      body {
+        padding: 16px 128px 16px;
+      }
     }
 
     iframe,
@@ -182,6 +201,48 @@
       }
     }
   </style>
+
+  <script>
+    (function () {
+      if (!window.MediaList) {
+        var style = document.createElement("style");
+        var parentNode = document.head || document.scripts[0].parentNode;
+        parentNode.appendChild(style);
+        if (style.styleSheet) {
+          style.type = "text/css";
+        }
+        function callMedia() {
+          var css = '';
+          var clientWidth = document.documentElement.clientWidth;
+          if (clientWidth < 640) {
+            css = "body{padding:16px}";
+          }
+          else if (clientWidth < 1007) {
+            css = "body{padding:16px 32px 16px}";
+          }
+          else if (clientWidth < 1372) {
+            css = "body{padding:16px 64px 16px}";
+          }
+          else {
+            css = "body{padding:16px 128px 16px}";
+          }
+          if (style.styleSheet) {
+            style.styleSheet.cssText = css;
+          }
+          else {
+            style.innerText = css;
+          }
+        }
+        callMedia();
+        if (window.addEventListener) {
+          window.addEventListener("resize", callMedia);
+        }
+        else if (window.attachEvent) {
+          window.attachEvent("onresize", callMedia);
+        }
+      }
+    })();
+  </script>
 </head>
 
 <body class="main-inner" itemscope itemtype="http://schema.org/WebPage">
