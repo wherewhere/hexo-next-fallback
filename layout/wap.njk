@@ -80,6 +80,7 @@
     }
 
     body {
+      margin: 0;
       padding: 16px;
       background: #F3F3F3;
       transition: all 0.083s ease-in-out;
@@ -116,10 +117,6 @@
 
     img.emoji {
       margin-top: 2px;
-    }
-
-    .post-block:last-of-type .post-eof {
-      display: none;
     }
 
     .markdown-body {
@@ -186,6 +183,44 @@
       text-align: center;
     }
 
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      margin: 16px 0 0;
+    }
+
+    .pagination .prev,
+    .pagination .next,
+    .pagination .page-number,
+    .pagination .space {
+      display: inline-block;
+      margin: -1px 10px 0;
+      padding: 0 10px;
+    }
+
+    @media (max-width: 767px) {
+
+      .pagination .prev,
+      .pagination .next,
+      .pagination .page-number,
+      .pagination .space {
+        margin: 0 5px;
+      }
+    }
+
+    .pagination .prev,
+    .pagination .next,
+    .pagination .page-number {
+      border-bottom: 0;
+    }
+
+    .pagination .space {
+      margin: 0;
+      padding: 0;
+    }
+
     @media (prefers-color-scheme: dark) {
       :root {
         color-scheme: dark;
@@ -226,11 +261,21 @@
           else {
             css = "body{padding:16px 128px 16px}";
           }
-          if (style.styleSheet) {
-            style.styleSheet.cssText = css;
+          if (clientWidth > 767) {
+            css += ".pagination .prev,.pagination .next,.pagination .page-number,.pagination .space{margin: -1px 10px 0}";
           }
           else {
-            style.innerText = css;
+            css += ".pagination .prev,.pagination .next,.pagination .page-number,.pagination .space{margin: 0 5px}";
+          }
+          if (style.styleSheet) {
+            if (style.styleSheet.cssText !== css) {
+              style.styleSheet.cssText = css;
+            }
+          }
+          else {
+            if (style.innerText !== css) {
+              style.innerText = css;
+            }
           }
         }
         callMedia();
@@ -288,6 +333,14 @@
       {{ page.content }}
     </div>
   </div>
+  {% endif %}
+
+  {% if page.prev or page.next %}
+  <nav>
+    <div class="pagination markdown-body">
+      {{ html_paginator() }}
+    </div>
+  </nav>
   {% endif %}
 
   {% if theme.pjax %}

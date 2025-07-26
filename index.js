@@ -126,6 +126,21 @@ if (!hexo.config.bilibili_card?.enable) {
   hexo.extend.filter.register("after_post_render", require("./lib/bilibili-card.js"));
 }
 
+hexo.extend.helper.register("html_paginator", function () {
+  const prev = "上一页";
+  const next = "下一页";
+  let paginator = this.paginator({
+    prev_text: "上一页",
+    next_text: "下一页",
+    mid_size: 1,
+    escape: false
+  });
+  paginator = paginator
+    .replace('rel="prev"', `rel="prev" title="${prev}" aria-label="${prev}"`)
+    .replace('rel="next"', `rel="next" title="${next}" aria-label="${next}"`);
+  return paginator;
+});
+
 hexo.extend.generator.register("wap", async locals => {
   const path = resolve(dirname(require.resolve("./package.json")), "layout/wap.njk");
   const layout = await new Promise((/** @type {(string) => void} */ resolve, reject) =>
@@ -142,12 +157,21 @@ hexo.extend.generator.register("wap", async locals => {
   }
   require("./lib/markdown.js")(hexo);
   hexo.theme.setView("wap.njk", layout);
+  const pagination = require('hexo-pagination');
+  const config = hexo.config;
+  const posts = locals.posts.filter(post => !post.hidden).sort(config.index_generator.order_by);
+  posts.data.sort((a, b) => (b.sticky || 0) - (a.sticky || 0));
+  const paginationDir = config.index_generator.pagination_dir || config.pagination_dir || "page";
+  const pages = pagination("wap", posts, {
+    perPage: config.index_generator.per_page,
+    layout: "wap",
+    format: `${paginationDir}/%d/`,
+    data: {
+      __index: true
+    }
+  });
   return [
-    {
-      path: "wap/index.html",
-      data: locals,
-      layout: "wap"
-    },
+    ...pages,
     ...locals.posts.map(post => {
       return {
         path: `wap/${post.path}`,
