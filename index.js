@@ -95,7 +95,8 @@ function renderGenerator(hexo, path, getTextAsync, engine = "js") {
   };
 }
 
-hexo.extend.filter.register("after_render:css", require("./lib/postcss.js"));
+hexo.extend.filter.register("after_render:css", require("./lib/postcss.js").processCSS);
+hexo.extend.filter.register("after_render:html", require("./lib/postcss.js").processHTMLCSS);
 
 hexo.extend.generator.register(
   "hexo-next-polyfill",
