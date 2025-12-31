@@ -142,7 +142,7 @@ hexo.extend.helper.register("html_paginator", function () {
 });
 
 hexo.extend.generator.register("wap", async locals => {
-  const path = require.resolve("layout/wap.njk");
+  const path = require.resolve("./layout/wap.njk");
   const layout = await readFile(path, "utf8");
   if (hexo.config.syntax_highlighter === "highlight.js" || hexo.config.highlight.enable) {
     await require("./lib/highlight.js")(hexo);
