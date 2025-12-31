@@ -1,6 +1,5 @@
 const { transformAsync } = require("@babel/core");
-const { readFile } = require("fs");
-const { dirname, resolve } = require("path");
+const { readFile } = require("fs/promises");
 const polyfill = require("./lib/polyfill.js")
 const fallback = require("./lib/fallback.js");
 
@@ -143,22 +142,14 @@ hexo.extend.helper.register("html_paginator", function () {
 });
 
 hexo.extend.generator.register("wap", async locals => {
-  const path = resolve(dirname(require.resolve("./package.json")), "layout/wap.njk");
-  const layout = await new Promise((/** @type {(string) => void} */ resolve, reject) =>
-    readFile(path, { encoding: "utf8" }, (err, data) => {
-      if (err) {
-        reject(err);
-      }
-      else {
-        resolve(data);
-      }
-    }));
-  if (hexo.config.syntax_highlighter === 'highlight.js' || hexo.config.highlight.enable) {
-    require("./lib/highlight.js")(hexo);
+  const path = require.resolve("layout/wap.njk");
+  const layout = await readFile(path, "utf8");
+  if (hexo.config.syntax_highlighter === "highlight.js" || hexo.config.highlight.enable) {
+    await require("./lib/highlight.js")(hexo);
   }
-  require("./lib/markdown.js")(hexo);
+  await require("./lib/markdown.js")(hexo);
   hexo.theme.setView("wap.njk", layout);
-  const pagination = require('hexo-pagination');
+  const pagination = require("hexo-pagination");
   const config = hexo.config;
   const posts = locals.posts.filter(post => !post.hidden).sort(config.index_generator.order_by);
   posts.data.sort((a, b) => (b.sticky || 0) - (a.sticky || 0));
