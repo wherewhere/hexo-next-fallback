@@ -82,25 +82,22 @@
     body {
       margin: 0;
       padding: 16px;
+      max-width: 1116px;
+      margin-left: auto;
+      margin-right: auto;
       background: #F3F3F3;
       transition: all 0.083s ease-in-out;
     }
 
     @media (min-width: 640px) {
       body {
-        padding: 16px 32px 16px;
+        padding: 32px;
       }
     }
 
     @media (min-width: 1007px) {
       body {
-        padding: 16px 64px 16px;
-      }
-    }
-
-    @media (min-width: 1372px) {
-      body {
-        padding: 16px 128px 16px;
+        padding: 64px;
       }
     }
 
@@ -185,7 +182,7 @@
       justify-content: center;
       align-items: center;
       text-align: center;
-      margin: 16px 0 0;
+      margin-top: 16px;
     }
 
     .pagination .prev,
@@ -218,6 +215,22 @@
       padding: 0;
     }
 
+    .post-copyright {
+      display: flex;
+      color: #59636e;
+      margin-top: 16px;
+      padding-top: .3em;
+      border-top: 1px solid rgba(209, 217, 224, .702);
+    }
+
+    .post-copyright .left {
+      float: left;
+    }
+
+    .post-copyright .right {
+      float: right;
+    }
+
     @media (prefers-color-scheme: dark) {
       :root {
         color-scheme: dark;
@@ -230,6 +243,11 @@
       .markdown-body figure.highlight {
         color: #f0f6fc;
         background-color: #151b23;
+      }
+
+      .post-copyright {
+        color: #9198a1;
+        border-top: 1px solid rgba(61, 68, 77, .702);
       }
     }
   </style>
@@ -250,13 +268,10 @@
             css = "body{padding:16px}";
           }
           else if (clientWidth < 1007) {
-            css = "body{padding:16px 32px 16px}";
-          }
-          else if (clientWidth < 1372) {
-            css = "body{padding:16px 64px 16px}";
+            css = "body{padding:32px}";
           }
           else {
-            css = "body{padding:16px 128px 16px}";
+            css = "body{padding:64px}";
           }
           if (clientWidth > 767) {
             css += ".pagination .prev,.pagination .next,.pagination .page-number,.pagination .space{margin: -1px 10px 0}";
@@ -277,10 +292,10 @@
         }
         callMedia();
         if (window.addEventListener) {
-          window.addEventListener("resize", callMedia);
+          addEventListener("resize", callMedia);
         }
         else if (window.attachEvent) {
-          window.attachEvent("onresize", callMedia);
+          attachEvent("onresize", callMedia);
         }
       }
     })();
@@ -288,9 +303,10 @@
 </head>
 
 <body class="main-inner" itemscope itemtype="http://schema.org/WebPage">
-  {% if page.posts %}
-  {% for post in page.posts.sort('-date').toArray() %}
   <div class="post-block markdown-body">
+    {% if page.posts %}
+    <h1>{{ next_url('wap/', config.title, { rel: 'start', itemprop: 'url' }) }}</h1>
+    {% for post in page.posts.sort('-date').toArray() %}
     <div class="post-content" itemscope itemtype="http://schema.org/Article" lang="{{ page.lang }}">
       <h2>{{ next_url('wap/' + post.path, post.title or __('post.untitled'), { class: 'post-title-link', itemprop:
         'url' }) }}</h2>
@@ -321,16 +337,14 @@
       {% endif %}
     </div>
     <hr class="post-eof">
-  </div>
-  {% endfor %}
-  {% else %}
-  <div class="post-block markdown-body">
+    {% endfor %}
+    {% else %}
     <div class="post-content" itemscope itemtype="http://schema.org/Article" lang="{{ page.lang }}">
       <h1>{{ page.title }}</h1>
       {{ page.content }}
     </div>
+    {% endif %}
   </div>
-  {% endif %}
 
   {% if page.prev or page.next %}
   <nav>
@@ -340,9 +354,24 @@
   </nav>
   {% endif %}
 
+  <div class="post-copyright markdown-body">
+    <span class="copyright left">
+      {% set copyright_year = date(null, 'YYYY') %}
+      Copyright &copy;
+      {% if theme.footer.since and theme.footer.since != copyright_year %}{{ theme.footer.since }} – {% endif %}
+      <span itemprop="copyrightYear">{{ copyright_year }}</span>
+      <span class="author" itemprop="copyrightHolder">{{ config.author }}</span>.
+      All Rights Reserved
+    </span>
+    {% if theme.github_banner.enable %}
+    <span style="flex-grow: 1;">&nbsp;</span>
+    {{ next_url(theme.github_banner.permalink, 'GitHub', { class: 'right' }) }}
+    {% endif %}
+  </div>
+
   {% if theme.pjax %}
   <script>
-    (function () {
+    document.addEventListener("DOMContentLoaded", function () {
       if (window.Pjax && "replaceState" in history) {
         var pjax = new Pjax({
           selectors: [
@@ -389,80 +418,88 @@
         });
         window.pjax = pjax;
       }
-    })();
+    });
   </script>
   {% endif %}
 
   {% if theme.lazyload %}
   <script>
-    (function () {
-      function lazyload() {
-        try {
-          lozad(".post-content img").observe();
-        }
-        catch (_) {
-          if (document.querySelectorAll) {
-            var elements = document.querySelectorAll("[data-src]");
-            for (var i = 0; i < elements.length; i++) {
-              var element = elements[i];
-              element.setAttribute("src", element.getAttribute("data-src"));
-            }
-          }
-          else {
-            function findDescendants(element, predicate) {
-              var results = [];
-              if (!element) {
-                return results;
-              }
-              var children = element.children;
-              if (!children) {
-                return results;
-              }
-              for (var i = 0; i < children.length; i++) {
-                var child = children[i];
-                if (predicate(child)) {
-                  results.push(child);
-                }
-                var descendant = findDescendants(child, predicate);
-                if (descendant) {
-                  for (var j = 0; j < descendant.length; j++) {
-                    results.push(descendant[j]);
-                  }
-                }
-              }
-              return results;
-            }
-            var elements = findDescendants(document.documentElement, function (element) {
-              return element.attributes && element.attributes.getNamedItem("data-src");
-            });
-            for (var i = 0; i < elements.length; i++) {
-              var element = elements[i];
-              var data = element.attributes.getNamedItem("data-src");
-              var src = document.createAttribute("src");
-              src.value = data.value;
-              element.attributes.setNamedItem(src);
-            }
-          }
+    function lozadFallback() {
+      if (document.querySelectorAll) {
+        var elements = document.querySelectorAll("[data-src]");
+        for (var i = 0; i < elements.length; i++) {
+          var element = elements[i];
+          element.setAttribute("src", element.getAttribute("data-src"));
         }
       }
-      lazyload();
-      if (window.addEventListener) {
+      else {
+        function findDescendants(element, predicate) {
+          var results = [];
+          if (!element) {
+            return results;
+          }
+          var children = element.children;
+          if (!children) {
+            return results;
+          }
+          for (var i = 0; i < children.length; i++) {
+            var child = children[i];
+            if (predicate(child)) {
+              results.push(child);
+            }
+            var descendant = findDescendants(child, predicate);
+            if (descendant) {
+              for (var j = 0; j < descendant.length; j++) {
+                results.push(descendant[j]);
+              }
+            }
+          }
+          return results;
+        }
+        var elements = findDescendants(document.documentElement, function (element) {
+          return element.attributes && element.attributes.getNamedItem("data-src");
+        });
+        for (var i = 0; i < elements.length; i++) {
+          var element = elements[i];
+          var data = element.attributes.getNamedItem("data-src");
+          var src = document.createAttribute("src");
+          src.value = data.value;
+          element.attributes.setNamedItem(src);
+        }
+      }
+    }
+    if (document.addEventListener) {
+      document.addEventListener("DOMContentLoaded", function () {
+        function lazyload() {
+          try {
+            lozad(".post-content img").observe();
+          }
+          catch (_) {
+            lozadFallback();
+          }
+        }
+        lazyload();
         document.addEventListener("pjax:success", lazyload);
-      }
-    })();
+      });
+    }
+    else {
+      lozadFallback();
+    }
   </script>
   {% endif %}
 
   {% if theme.pace.enable %}
   <script>
-    if (window.Pace) {
-      Pace.options.restartOnPushState = false;
-      if (document.addEventListener) {
-        document.addEventListener("pjax:send", function () {
-          Pace.restart();
-        });
+    document.addEventListener("DOMContentLoaded", function () {
+      if (window.Pace) {
+        Pace.options.restartOnPushState = false;
+        if (document.addEventListener) {
+          document.addEventListener("pjax:send", function () {
+            Pace.restart();
+          });
+        }
       }
-    }
+    });
   </script>
   {% endif %}
 </body>
