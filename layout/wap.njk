@@ -81,7 +81,7 @@
 
     body {
       margin: 0;
-      padding: 16px;
+      padding: 32px 16px 16px;
       max-width: 1116px;
       margin-left: auto;
       margin-right: auto;
@@ -218,8 +218,9 @@
     .post-copyright {
       display: flex;
       color: #59636e;
+      font-size: 12px;
       margin-top: 16px;
-      padding-top: .3em;
+      padding-top: 10px;
       border-top: 1px solid rgba(209, 217, 224, .702);
     }
 
@@ -265,7 +266,7 @@
           var css = '';
           var clientWidth = document.documentElement.clientWidth;
           if (clientWidth < 640) {
-            css = "body{padding:16px}";
+            css = "body{padding:32px 16px 16px}";
           }
           else if (clientWidth < 1007) {
             css = "body{padding:32px}";
@@ -339,7 +340,7 @@
     <hr class="post-eof">
     {% endfor %}
     {% else %}
-    <div class="post-content" itemscope itemtype="http://schema.org/Article" lang="{{ page.lang }}">
+    <div class="post-content markdown-body" itemscope itemtype="http://schema.org/Article" lang="{{ page.lang }}">
       <h1>{{ page.title }}</h1>
       {{ page.content }}
     </div>
@@ -354,20 +355,22 @@
   </nav>
   {% endif %}
 
-  <div class="post-copyright markdown-body">
-    <span class="copyright left">
-      {% set copyright_year = date(null, 'YYYY') %}
-      Copyright &copy;
-      {% if theme.footer.since and theme.footer.since != copyright_year %}{{ theme.footer.since }} – {% endif %}
-      <span itemprop="copyrightYear">{{ copyright_year }}</span>
-      <span class="author" itemprop="copyrightHolder">{{ config.author }}</span>.
-      All Rights Reserved
-    </span>
-    {% if theme.github_banner.enable %}
-    <span style="flex-grow: 1;">&nbsp;</span>
-    {{ next_url(theme.github_banner.permalink, 'GitHub', { class: 'right' }) }}
-    {% endif %}
-  </div>
+  <footer>
+    <div class="post-copyright markdown-body">
+      <span class="copyright left">
+        {% set copyright_year = date(null, 'YYYY') %}
+        Copyright &copy;
+        {% if theme.footer.since and theme.footer.since != copyright_year %}{{ theme.footer.since }} – {% endif %}
+        <span itemprop="copyrightYear">{{ copyright_year }}</span>
+        <span class="author" itemprop="copyrightHolder">{{ config.author }}</span>.
+        All Rights Reserved
+      </span>
+      {% if theme.github_banner.enable %}
+      <span style="flex-grow: 1;">&nbsp;</span>
+      {{ next_url(theme.github_banner.permalink, 'GitHub', { class: 'right' }) }}
+      {% endif %}
+    </div>
+  </footer>
 
   {% if theme.pjax %}
   <script>
